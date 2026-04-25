@@ -188,6 +188,81 @@
             font-size: 0.8em;
             color: rgba(255, 255, 255, 0.5);
             letter-spacing: 0.03em;
+            margin-bottom: 28px;
+        }
+
+        /* Share section */
+        .share-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 24px;
+        }
+
+        .share-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: transparent;
+            color: #fff;
+            border: 1.5px solid #fff;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .share-btn:hover {
+            background: #111;
+        }
+
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .share-options.hidden {
+            display: none;
+        }
+
+        .share-option-btn {
+            width: 100%;
+            padding: 14px 18px;
+            background: #0d0d0d;
+            color: #fff;
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            font-family: inherit;
+            font-size: 0.88em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .share-option-btn:hover {
+            background: #1a1a1a;
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .share-confirm {
+            font-size: 0.78em;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 0.03em;
+            text-align: center;
+            margin-top: 12px;
+            min-height: 1.2em;
+            transition: opacity 0.3s;
+        }
+
+        .share-confirm.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         @media (max-width: 480px) {
@@ -216,22 +291,22 @@
         <h1>What type of sneakerhead are you?</h1>
 
         <div class="options">
-            <button class="option-btn" data-value="option_a" data-response="That's exactly what KickPredict is for.">
+            <button class="option-btn" data-value="option_a" data-type="The Passive Investor" data-response="That's exactly what KickPredict is for.">
                 I want to make money off kicks without the headache of reselling
             </button>
-            <button class="option-btn" data-value="option_b" data-response="No more bricks. Start calling shots.">
+            <button class="option-btn" data-value="option_b" data-type="The Brick Flipper" data-response="No more bricks. Start calling shots.">
                 I tried flipping but lost on bricks
             </button>
-            <button class="option-btn" data-value="option_c" data-response="Stop taking L's. Start winning.">
+            <button class="option-btn" data-value="option_c" data-type="The SNKRS Sniper" data-response="Stop taking L's. Start winning.">
                 I'm tired of taking L's on SNKRS
             </button>
-            <button class="option-btn" data-value="option_d" data-response="This is where you start.">
+            <button class="option-btn" data-value="option_d" data-type="The Rookie" data-response="This is where you start.">
                 I don't know where to start
             </button>
-            <button class="option-btn" data-value="option_e" data-response="You can do both.">
+            <button class="option-btn" data-value="option_e" data-type="The Culture Head" data-response="You can do both.">
                 I cop for the culture but wouldn't mind making money too
             </button>
-            <button class="option-btn" data-value="option_f" data-response="You don't need either.">
+            <button class="option-btn" data-value="option_f" data-type="The Hungry Head" data-response="You don't need either.">
                 I don't have the cash or connections
             </button>
         </div>
@@ -250,31 +325,39 @@
             onclick="pintrk('track', 'lead'); gtag('event', 'click', {'event_category': 'CTA', 'event_label': 'KickPredict Quiz'});"
         >Play KickPredict →</a>
         <p class="trust-line">Free to play &nbsp;•&nbsp; No inventory &nbsp;•&nbsp; No shipping</p>
+
+        <div class="share-section">
+            <button class="share-btn" id="share-btn">Share My Result →</button>
+            <div class="share-options hidden" id="share-options">
+                <button class="share-option-btn" id="share-twitter">𝕏 &nbsp;Post on X</button>
+                <button class="share-option-btn" id="share-copy">Copy Link</button>
+                <button class="share-option-btn" id="share-instagram">Copy Instagram Caption</button>
+            </div>
+            <p class="share-confirm hidden" id="share-confirm">&nbsp;</p>
+        </div>
     </div>
 </div>
 
 <script>
-    const options = document.querySelectorAll('.option-btn');
-    const goBtn = document.getElementById('go-btn');
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const responseText = document.getElementById('response-text');
+    var options = document.querySelectorAll('.option-btn');
+    var goBtn = document.getElementById('go-btn');
+    var step1 = document.getElementById('step1');
+    var step2 = document.getElementById('step2');
+    var responseText = document.getElementById('response-text');
 
-    let selectedOption = null;
-    let selectedResponse = null;
+    var selectedOption = null;
+    var selectedResponse = null;
+    var selectedType = null;
 
     options.forEach(function(btn) {
         btn.addEventListener('click', function() {
-            // Deselect all
             options.forEach(function(b) { b.classList.remove('selected'); });
-            // Select this one
             btn.classList.add('selected');
             selectedOption = btn.dataset.value;
             selectedResponse = btn.dataset.response;
-            // Show go button
+            selectedType = btn.dataset.type;
             goBtn.classList.add('visible');
-            // Fire GA selection event
-            gtag('event', 'quiz_selection', {'option': selectedOption});
+            gtag('event', 'quiz_selection', {'option_selected': btn.textContent.trim()});
         });
     });
 
@@ -290,6 +373,70 @@
             step2.classList.remove('hidden');
             step2.classList.add('fade-in');
         }, 300);
+    });
+
+    // Share functionality
+    var shareBtn = document.getElementById('share-btn');
+    var shareOptions = document.getElementById('share-options');
+    var shareConfirm = document.getElementById('share-confirm');
+    var shareTwitter = document.getElementById('share-twitter');
+    var shareCopy = document.getElementById('share-copy');
+    var shareInstagram = document.getElementById('share-instagram');
+
+    var QUIZ_URL = 'https://quiz.kickpredict.co';
+
+    function getShareText() {
+        return 'I\'m "' + selectedType + '" — I just found out what type of sneakerhead I am. What are you? ' + QUIZ_URL;
+    }
+
+    function getInstagramCaption() {
+        return 'I\'m "' + selectedType + '" 🔥\n\nI just found out what type of sneakerhead I am — what are you?\n\n' + QUIZ_URL;
+    }
+
+    function showConfirm(msg) {
+        shareConfirm.textContent = msg;
+        shareConfirm.classList.remove('hidden');
+        setTimeout(function() {
+            shareConfirm.classList.add('hidden');
+            setTimeout(function() { shareConfirm.textContent = ' '; }, 300);
+        }, 2500);
+    }
+
+    shareBtn.addEventListener('click', function() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'KickPredict — What type of sneakerhead are you?',
+                text: 'I\'m "' + selectedType + '" — I just found out what type of sneakerhead I am. What are you?',
+                url: QUIZ_URL
+            }).catch(function() {});
+            gtag('event', 'share', {'method': 'native', 'sneakerhead_type': selectedType});
+        } else {
+            shareOptions.classList.toggle('hidden');
+        }
+    });
+
+    shareTwitter.addEventListener('click', function() {
+        var tweet = encodeURIComponent(getShareText());
+        window.open('https://twitter.com/intent/tweet?text=' + tweet, '_blank', 'noopener,noreferrer');
+        gtag('event', 'share', {'method': 'twitter', 'sneakerhead_type': selectedType});
+    });
+
+    shareCopy.addEventListener('click', function() {
+        navigator.clipboard.writeText(QUIZ_URL).then(function() {
+            showConfirm('Link copied!');
+            gtag('event', 'share', {'method': 'copy_link', 'sneakerhead_type': selectedType});
+        }).catch(function() {
+            showConfirm('quiz.kickpredict.co');
+        });
+    });
+
+    shareInstagram.addEventListener('click', function() {
+        navigator.clipboard.writeText(getInstagramCaption()).then(function() {
+            showConfirm('Caption copied — paste it into your Instagram post!');
+            gtag('event', 'share', {'method': 'instagram', 'sneakerhead_type': selectedType});
+        }).catch(function() {
+            showConfirm('Copy the caption above and paste in Instagram!');
+        });
     });
 </script>
 
