@@ -266,6 +266,11 @@
         }
 
         @media (max-width: 480px) {
+            body {
+                align-items: flex-start;
+                padding-bottom: 32px;
+            }
+
             h1 {
                 font-size: 1.65em;
             }
@@ -355,6 +360,7 @@
             selectedResponse = btn.dataset.response;
             selectedType = btn.dataset.type;
             goBtn.classList.add('visible');
+            goBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             gtag('event', 'quiz_selection', {'option_selected': btn.textContent.trim()});
         });
     });
